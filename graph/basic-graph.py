@@ -1,3 +1,14 @@
+"""
+    
+    0 --- 1
+    |   / | \ 
+    |  /  |   2
+    | /   | /
+    4 --- 3
+
+"""
+
+
 class AdjNode:
     def __init__(self, data):
         self.vertex = data
