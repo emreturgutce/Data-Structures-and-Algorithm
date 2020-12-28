@@ -33,6 +33,23 @@ class Graph {
         }
         this.adjacencyList.delete(vertex);
     }
+
+    depthFirstSearchRecursive(start) {
+        const result = [];
+        const visited = {};
+        const adjacencyList = this.adjacencyList;
+
+        (function dfs(vertex) {
+            if (!vertex) return null;
+            visited[vertex] = true;
+            result.push(vertex);
+            adjacencyList.get(vertex).forEach((neighbor) => {
+                if (!visited[neighbor]) return dfs(neighbor);
+            });
+        })(start);
+
+        return result;
+    }
 }
 
 const graph = new Graph();
@@ -48,3 +65,4 @@ graph.removeEdge('Tokyo', 'San Francisco');
 console.log(graph.adjacencyList);
 graph.removeVertex('Tokyo');
 console.log(graph.adjacencyList);
+console.log(graph.depthFirstSearchRecursive('Istanbul'));
