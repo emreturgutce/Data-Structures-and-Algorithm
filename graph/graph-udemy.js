@@ -100,16 +100,27 @@ class Graph {
 
 const graph = new Graph();
 
-graph.addVertex('Tokyo');
-graph.addVertex('Istanbul');
-graph.addVertex('San Francisco');
-graph.addEdge('Tokyo', 'Istanbul');
-graph.addEdge('Tokyo', 'San Francisco');
-graph.addEdge('San Francisco', 'Istanbul');
-console.log(graph.adjacencyList);
-graph.removeEdge('Tokyo', 'San Francisco');
-console.log(graph.adjacencyList);
-graph.removeVertex('Tokyo');
-console.log(graph.adjacencyList);
-console.log(graph.depthFirstSearchRecursive('Istanbul'));
-console.log(graph.depthFirstSearchIterative('Istanbul'));
+/*
+        A
+      /   \
+    B       C
+    |       |
+    E  ---  D
+      \   /
+        F
+*/
+
+graph.addVertex('A');
+graph.addVertex('B');
+graph.addVertex('C');
+graph.addVertex('D');
+graph.addVertex('E');
+graph.addVertex('F');
+graph.addEdge('A', 'B');
+graph.addEdge('A', 'C');
+graph.addEdge('B', 'E');
+graph.addEdge('C', 'D');
+graph.addEdge('D', 'E');
+graph.addEdge('D', 'F');
+graph.addEdge('E', 'F');
+console.log(graph.breadthFirstSearch('A'));
