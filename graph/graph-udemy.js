@@ -50,6 +50,52 @@ class Graph {
 
         return result;
     }
+
+    depthFirstSearchIterative(start) {
+        const stack = [start];
+        const result = [];
+        const visited = {};
+        let currVertex;
+
+        visited[start] = true;
+
+        while (stack.length) {
+            currVertex = stack.pop();
+            result.push(currVertex);
+
+            this.adjacencyList.get(currVertex).forEach((neighbor) => {
+                if (!visited[neighbor]) {
+                    visited[neighbor] = true;
+                    stack.push(neighbor);
+                }
+            });
+        }
+
+        return result;
+    }
+
+    breadthFirstSearch(start) {
+        const queue = [start];
+        const result = [];
+        const visited = {};
+        let currVertex;
+
+        visited[start] = true;
+
+        while (queue.length) {
+            currVertex = queue.shift();
+            result.push(currVertex);
+
+            this.adjacencyList.get(currVertex).forEach((neighbor) => {
+                if (!visited[neighbor]) {
+                    visited[neighbor] = true;
+                    queue.push(neighbor);
+                }
+            });
+        }
+
+        return result;
+    }
 }
 
 const graph = new Graph();
@@ -66,3 +112,4 @@ console.log(graph.adjacencyList);
 graph.removeVertex('Tokyo');
 console.log(graph.adjacencyList);
 console.log(graph.depthFirstSearchRecursive('Istanbul'));
+console.log(graph.depthFirstSearchIterative('Istanbul'));
