@@ -19,7 +19,7 @@ function jumpGame(
     }
 
     for (let i = 1; i <= arr[index]; i++) {
-        if (jumpGame(arr, i + index, i)) {
+        if (jumpGame(arr, i + index, i, memo)) {
             memoSet(memo, index, jump, true);
             return true;
         }
@@ -45,4 +45,6 @@ function memoSet(
 
 const arr = [3, 2, 1, 0, 4];
 
+console.time('jump');
 console.log(jumpGame(arr, 0, arr[0]));
+console.timeEnd('jump');
