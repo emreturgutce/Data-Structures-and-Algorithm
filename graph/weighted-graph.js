@@ -90,7 +90,7 @@ class WeightedGraph {
         const nodes = new PriorityQueue();
         const distances = {};
         const previous = {};
-        let path = [];
+        const path = [];
         let smallest;
 
         for (let vertex in this.adjacencyList) {

@@ -47,9 +47,9 @@ class Graph {
         visited.add(start);
 
         while (queue.length > 0) {
-            const vertex = queue.shift();
+            const vertex = queue.shift() as string;
 
-            const neighbors = this.adjacencyList.get(vertex!);
+            const neighbors = this.adjacencyList.get(vertex);
 
             if (neighbors) {
                 for (const [key, _] of neighbors) {
@@ -77,15 +77,76 @@ class Graph {
         const stack = [start];
 
         while (stack.length > 0) {
-            const vertex = stack.pop();
-            visited.add(vertex!);
+            const vertex = stack.pop() as string;
+            visited.add(vertex);
 
-            const neighbors = this.adjacencyList.get(vertex!);
+            const neighbors = this.adjacencyList.get(vertex);
 
             if (neighbors) for (const [key, _] of neighbors) stack.push(key);
         }
 
         return visited;
+    }
+
+    /**
+     * Dijkstra Algorithm
+     * @param source - Source vertex
+     * @param dest - Destination vertex
+     * @return Distance between them
+     */
+    dijkstra(source: string, dest: string): number {
+        if (!this.adjacencyList.has(source) || !this.adjacencyList.has(dest)) {
+            throw new Error(
+                'source or destination does not exist in the graph',
+            );
+        }
+
+        const distances = new Map<string, number>();
+        const stack: string[] = [];
+
+        for (const [key, _] of this.adjacencyList) {
+            distances.set(key, Number.MAX_SAFE_INTEGER);
+        }
+
+        distances.set(source, 0);
+
+        for (const [key, val] of this.adjacencyList.get(source) as Map<
+            string,
+            number
+        >) {
+            if (val < 0) {
+                throw new Error(
+                    'Cannot calculate shortest path for negative edges with dijkstra',
+                );
+            }
+            distances.set(key, val);
+            stack.push(key);
+        }
+
+        while (stack.length > 0) {
+            const vertex = stack.pop() as string;
+
+            for (const [key, val] of this.adjacencyList.get(vertex) as Map<
+                string,
+                number
+            >) {
+                if (val < 0) {
+                    throw new Error(
+                        'Cannot calculate shortest path for negative edges with dijkstra',
+                    );
+                }
+                stack.push(key);
+                const distance = (distances.get(vertex) as number) + val;
+                if (
+                    distances.has(key) &&
+                    (distances.get(key) as number) > distance
+                ) {
+                    distances.set(key, distance);
+                }
+            }
+        }
+
+        return distances.get(dest) as number;
     }
 }
 
@@ -106,4 +167,4 @@ graph.addEdge('D', 'C', 8);
 graph.addEdge('D', 'E', 1);
 graph.addEdge('D', 'F', 6);
 graph.addEdge('E', 'F', 3);
-console.log(graph.dfs('A'));
+console.log(graph.dijkstra('A', 'D'));
