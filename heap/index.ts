@@ -1,8 +1,10 @@
+type ScoreFunction<T> = (x: T) => number;
+
 class Heap<T> {
     private content: T[];
-    private scoreFunction: (x: T) => number;
+    private scoreFunction: ScoreFunction<T>;
 
-    constructor(scoreFunction: (x: T) => number) {
+    constructor(scoreFunction: ScoreFunction<T>) {
         this.content = [];
         this.scoreFunction = scoreFunction;
     }
