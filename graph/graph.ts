@@ -167,4 +167,4 @@ graph.addEdge('D', 'C', 8);
 graph.addEdge('D', 'E', 1);
 graph.addEdge('D', 'F', 6);
 graph.addEdge('E', 'F', 3);
-console.log(graph.dijkstra('A', 'D'));
+console.log(graph.dijkstra('A', 'F'));
