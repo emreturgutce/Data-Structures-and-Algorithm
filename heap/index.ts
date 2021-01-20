@@ -10,7 +10,7 @@ class Heap<T> {
     }
 
     /**
-     * Adds a node to the heap
+     * Add a node to the heap
      * @param node - Node which is going to be pushed to heap
      */
     push(node: T) {
@@ -31,7 +31,7 @@ class Heap<T> {
     }
 
     /**
-     * Removes the given node from heap
+     * Remove the given node from heap
      * @param node - Node which is going to be removed from heap
      */
     remove(node: T) {
@@ -59,7 +59,7 @@ class Heap<T> {
     }
 
     /**
-     * Finds the right spot for the newly added element
+     * Find the right spot for the newly added element
      * @param n - Where are we going to start bubble up from
      */
     private bubbleUp(n: number) {
@@ -67,15 +67,15 @@ class Heap<T> {
         const score = this.scoreFunction(element);
 
         while (n > 0) {
-            const parentN = Math.floor((n + 1) / 2) - 1;
-            const parent = this.content[parentN];
+            const parentIndex = Math.floor((n + 1) / 2) - 1;
+            const parent = this.content[parentIndex];
 
             if (score >= this.scoreFunction(parent)) break;
 
-            this.content[parentN] = element;
+            this.content[parentIndex] = element;
             this.content[n] = parent;
 
-            n = parentN;
+            n = parentIndex;
         }
     }
 
@@ -88,31 +88,39 @@ class Heap<T> {
     private sinkDown(n: number) {
         const length = this.content.length;
         const element = this.content[n];
-        const elemScore = this.scoreFunction(element);
+        const score = this.scoreFunction(element);
 
         while (true) {
-            const child2N = (n + 1) * 2;
-            const child1N = child2N - 1;
-            let swap = null;
+            const rightChildIndex = (n + 1) * 2;
+            const leftChildIndex = rightChildIndex - 1;
+            let swap: number | null = null;
+            let leftChildScore: number;
 
-            if (child1N < length) {
-                const child1 = this.content[child1N];
-                var child1Score = this.scoreFunction(child1);
+            if (leftChildIndex < length) {
+                const leftChild = this.content[leftChildIndex];
+                leftChildScore = this.scoreFunction(leftChild);
 
-                if (child1Score < elemScore) swap = child1N;
+                if (leftChildScore < score) {
+                    swap = leftChildIndex;
+                }
             }
 
-            if (child2N < length) {
-                const child2 = this.content[child2N];
-                const child2Score = this.scoreFunction(child2);
-                if (child2Score < (swap == null ? elemScore : child1Score))
-                    swap = child2N;
+            if (rightChildIndex < length) {
+                const rightChild = this.content[rightChildIndex];
+                const rightChildScore = this.scoreFunction(rightChild);
+
+                if (
+                    rightChildScore < (swap === null ? score : leftChildScore)
+                ) {
+                    swap = rightChildIndex;
+                }
             }
 
-            if (swap == null) break;
+            if (swap === null) break;
 
             this.content[n] = this.content[swap];
             this.content[swap] = element;
+
             n = swap;
         }
     }
@@ -120,7 +128,7 @@ class Heap<T> {
 
 const heap = new Heap<number>((x) => x);
 
-[10, 3, 4, 8, 2, 9, 7, 1, 2, 6, 5].forEach((val) => heap.push(val));
+[10, 3, 4, 8, 2].forEach((val) => heap.push(val));
 console.log(heap);
 heap.remove(2);
 console.log(heap);
