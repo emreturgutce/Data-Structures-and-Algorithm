@@ -22,12 +22,14 @@ class Heap<T> {
      * Remove the node which is at the top of the heap
      */
     pop(): T {
+        const node = this.content[0];
+
         if (this.content.length > 0) {
-            this.content[0] = this.content.pop();
+            this.content[0] = this.content.pop() as T;
             this.sinkDown(0);
         }
 
-        return this.content[0];
+        return node;
     }
 
     /**
@@ -42,7 +44,7 @@ class Heap<T> {
 
             if (i === heapSize - 1) break;
 
-            this.content[i] = this.content.pop();
+            this.content[i] = this.content.pop() as T;
 
             this.bubbleUp(i);
             this.sinkDown(i);
@@ -110,7 +112,8 @@ class Heap<T> {
                 const rightChildScore = this.scoreFunction(rightChild);
 
                 if (
-                    rightChildScore < (swap === null ? score : leftChildScore)
+                    swap === null ||
+                    (swap !== null && rightChildScore < leftChildScore!)
                 ) {
                     swap = rightChildIndex;
                 }
