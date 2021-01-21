@@ -1,3 +1,5 @@
+import { PriorityQueue } from '../heap/priority-queue';
+
 /**
  * Weighted and directed Graph
  */
@@ -29,6 +31,10 @@ class Graph {
             this.adjacencyList.set(
                 source,
                 this.adjacencyList.get(source)!.set(dest, weight),
+            );
+            this.adjacencyList.set(
+                dest,
+                this.adjacencyList.get(dest)!.set(source, weight),
             );
         }
     }
@@ -94,77 +100,76 @@ class Graph {
      * @param dest - Destination vertex
      * @return Distance between them
      */
-    dijkstra(source: string, dest: string): number {
+    dijkstra(source: string, dest: string): string[] {
         if (!this.adjacencyList.has(source) || !this.adjacencyList.has(dest)) {
             throw new Error(
                 'source or destination does not exist in the graph',
             );
         }
 
+        const nodes = new PriorityQueue<string>();
         const distances = new Map<string, number>();
-        const stack: string[] = [];
+        const previous = new Map<string, string | null>();
+        const path: string[] = [];
+        let smallest: string;
+        const visited: string[] = [];
 
         for (const [key, _] of this.adjacencyList) {
-            distances.set(key, Number.MAX_SAFE_INTEGER);
-        }
-
-        distances.set(source, 0);
-
-        for (const [key, val] of this.adjacencyList.get(source) as Map<
-            string,
-            number
-        >) {
-            if (val < 0) {
-                throw new Error(
-                    'Cannot calculate shortest path for negative edges with dijkstra',
-                );
-            }
+            const val = key === source ? 0 : Number.MAX_SAFE_INTEGER;
             distances.set(key, val);
-            stack.push(key);
+            nodes.enqueue(key, val);
+            previous.set(key, null);
         }
 
-        while (stack.length > 0) {
-            const vertex = stack.pop() as string;
+        while (visited.length < distances.size) {
+            smallest = nodes.dequeue().data;
+            visited.push(smallest);
 
-            for (const [key, val] of this.adjacencyList.get(vertex) as Map<
-                string,
-                number
-            >) {
-                if (val < 0) {
-                    throw new Error(
-                        'Cannot calculate shortest path for negative edges with dijkstra',
-                    );
+            if (smallest === dest) {
+                while (previous.has(smallest)) {
+                    path.push(smallest);
+                    smallest = previous.get(smallest) as string;
                 }
-                stack.push(key);
-                const distance = (distances.get(vertex) as number) + val;
-                if (
-                    distances.has(key) &&
-                    (distances.get(key) as number) > distance
-                ) {
-                    distances.set(key, distance);
+                break;
+            }
+
+            if (
+                smallest ||
+                distances.get(smallest) !== Number.MAX_SAFE_INTEGER
+            ) {
+                for (const [key, val] of this.adjacencyList.get(
+                    smallest,
+                ) as Map<string, number>) {
+                    const candidate = (distances.get(smallest) as number) + val;
+
+                    if (candidate < (distances.get(key) as number)) {
+                        distances.set(key, candidate);
+                        previous.set(key, smallest);
+                        nodes.changePriority(key, candidate);
+                    }
                 }
             }
         }
 
-        return distances.get(dest) as number;
+        return path;
     }
 }
 
 const graph = new Graph();
 
-graph.addVertex('A');
-graph.addVertex('B');
-graph.addVertex('C');
-graph.addVertex('D');
-graph.addVertex('E');
-graph.addVertex('F');
-graph.addEdge('A', 'B', 6);
-graph.addEdge('A', 'C', 5);
-graph.addEdge('B', 'C', 6);
-graph.addEdge('B', 'D', 2);
-graph.addEdge('C', 'E', 2);
-graph.addEdge('D', 'C', 8);
-graph.addEdge('D', 'E', 1);
-graph.addEdge('D', 'F', 6);
-graph.addEdge('E', 'F', 3);
-console.log(graph.dijkstra('A', 'F'));
+graph.addVertex('1');
+graph.addVertex('2');
+graph.addVertex('3');
+graph.addVertex('4');
+graph.addVertex('5');
+graph.addVertex('6');
+graph.addEdge('1', '2', 7);
+graph.addEdge('1', '3', 9);
+graph.addEdge('1', '6', 14);
+graph.addEdge('6', '3', 2);
+graph.addEdge('3', '2', 10);
+graph.addEdge('6', '5', 9);
+graph.addEdge('3', '4', 11);
+graph.addEdge('2', '4', 15);
+graph.addEdge('5', '4', 6);
+console.log(graph.dijkstra('1', '5'));
