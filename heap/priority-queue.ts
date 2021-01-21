@@ -1,6 +1,6 @@
 class PriorityQueueNode<T> {
     readonly data: T;
-    readonly priority: number;
+    priority: number;
 
     constructor(data: T, priority: number) {
         this.data = data;
@@ -8,28 +8,42 @@ class PriorityQueueNode<T> {
     }
 }
 
-class PriorityQueue<T> {
+export class PriorityQueue<T> {
     private content: PriorityQueueNode<T>[] = [];
 
     enqueue(data: T, priority: number): void {
         this.content.push(new PriorityQueueNode(data, priority));
-        this.bubbleUp(this.content.length - 1);
+        this.bubbleUp();
     }
 
     dequeue(): PriorityQueueNode<T> {
+        const node = this.content[0];
+
         if (this.content.length) {
-            this.content[0] = this.content.pop();
-            this.sinkDown(0);
+            this.content[0] = this.content.pop() as PriorityQueueNode<T>;
+            this.sinkDown();
         }
 
-        return this.content[0];
+        return node;
     }
 
-    private bubbleUp(index: number) {
+    size(): number {
+        return this.content.length;
+    }
+
+    changePriority(key: T, priority: number): void {
+        if (key in this.content) {
+            this.content.find(
+                (value) => value.data === key,
+            )!.priority = priority;
+        }
+    }
+
+    private bubbleUp(index: number = this.content.length - 1) {
         const node = this.content[index];
 
         while (index > 0) {
-            const parentIndex = Math.floor((index + 1) / 2) - 1;
+            const parentIndex = Math.floor((index - 1) / 2);
             const parentNode = this.content[parentIndex];
 
             if (node.priority >= parentNode.priority) break;
@@ -40,28 +54,36 @@ class PriorityQueue<T> {
         }
     }
 
-    private sinkDown(index: number) {
+    private sinkDown(index: number = 0) {
         const node = this.content[index];
         const length = this.content.length;
 
-        while (true) {
+        while (index < length) {
             let swap: number | null = null;
             const rightIndex = (index + 1) * 2;
             const leftIndex = rightIndex - 1;
+            let leftPriority: number;
 
             if (leftIndex < length) {
                 const leftNode = this.content[leftIndex];
+                leftPriority = leftNode.priority;
 
-                if (node.priority > leftNode.priority) {
+                if (node.priority > leftPriority) {
                     swap = leftIndex;
                 }
             }
 
             if (rightIndex < length) {
                 const rightNode = this.content[rightIndex];
+                const rightPriority = rightNode.priority;
 
-                if (node.priority > rightNode.priority) {
-                    swap = swap === null ? rightIndex : swap;
+                if (node.priority > rightPriority) {
+                    if (
+                        swap === null ||
+                        (swap !== null && rightPriority < leftPriority!)
+                    ) {
+                        swap = rightIndex;
+                    }
                 }
             }
 
@@ -79,10 +101,3 @@ class PriorityQueue<T> {
         this.content[index2] = temp;
     }
 }
-
-const priorityQueue = new PriorityQueue<number>();
-
-[10, 3, 4, 8, 2].forEach((val) => priorityQueue.enqueue(val, val));
-console.log(priorityQueue);
-priorityQueue.dequeue();
-console.log(priorityQueue);
