@@ -95,7 +95,7 @@ class Graph {
     }
 
     /**
-     * Dijkstra Algorithm
+     * Dijkstra Algorithm to find the shortest path between source and dest
      * @param source - Source vertex
      * @param dest - Destination vertex
      * @return Distance between them
@@ -151,7 +151,7 @@ class Graph {
             }
         }
 
-        return path;
+        return path.reverse();
     }
 }
 
@@ -172,4 +172,4 @@ graph.addEdge('6', '5', 9);
 graph.addEdge('3', '4', 11);
 graph.addEdge('2', '4', 15);
 graph.addEdge('5', '4', 6);
-console.log(graph.dijkstra('1', '5'));
+console.log(graph.dijkstra('1', '4'));
