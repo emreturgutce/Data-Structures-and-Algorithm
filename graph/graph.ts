@@ -153,6 +153,61 @@ class Graph {
 
         return path.reverse();
     }
+
+    /**
+     * Bellman-Ford Algorithm to find the shortest path between source and dest
+     * @param source - Source vertex
+     * @param dest - Destination vertex
+     * @return Distance between them
+     */
+    bellmanFord(source: string, dest: string): string[] {
+        if (!this.adjacencyList.has(source)) {
+            throw new Error(
+                'source or destination does not exist in the graph',
+            );
+        }
+
+        const distances = new Map<string, number>();
+        const previous = new Map<string, string | null>();
+        const path: string[] = [];
+        let val: string | null = dest;
+
+        for (const [key, _] of this.adjacencyList) {
+            previous.set(key, null);
+            distances.set(key, Number.MAX_SAFE_INTEGER);
+        }
+
+        distances.set(source, 0);
+
+        for (let i = 0; i < this.adjacencyList.size - 1; i++) {
+            for (const [key, _] of this.adjacencyList) {
+                const neighbors = this.adjacencyList.get(key) as Map<
+                    string,
+                    number
+                >;
+
+                for (const [neighborKey, edgeWeight] of neighbors) {
+                    const distanceToNeighbor =
+                        (distances.get(key) as number) + edgeWeight;
+
+                    if (
+                        distanceToNeighbor <
+                        (distances.get(neighborKey) as number)
+                    ) {
+                        distances.set(neighborKey, distanceToNeighbor);
+                        previous.set(neighborKey, key);
+                    }
+                }
+            }
+        }
+
+        while (val !== null) {
+            path.unshift(val);
+            val = previous.get(val) as string;
+        }
+
+        return path;
+    }
 }
 
 const graph = new Graph();
@@ -172,4 +227,4 @@ graph.addEdge('6', '5', 9);
 graph.addEdge('3', '4', 11);
 graph.addEdge('2', '4', 15);
 graph.addEdge('5', '4', 6);
-console.log(graph.dijkstra('1', '4'));
+console.log(graph.bellmanFord('1', '5'));
