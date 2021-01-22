@@ -19,9 +19,11 @@ export class PriorityQueue<T> {
     dequeue(): PriorityQueueNode<T> {
         const node = this.content[0];
 
-        if (this.content.length) {
+        if (this.content.length > 1) {
             this.content[0] = this.content.pop() as PriorityQueueNode<T>;
             this.sinkDown();
+        } else {
+            this.content.pop();
         }
 
         return node;
@@ -31,12 +33,21 @@ export class PriorityQueue<T> {
         return this.content.length;
     }
 
+    isEmpty(): boolean {
+        return this.content.length === 0;
+    }
+
     changePriority(key: T, priority: number): void {
-        if (key in this.content) {
-            this.content.find(
-                (value) => value.data === key,
-            )!.priority = priority;
+        const val = this.content.find((value) => value.data === key);
+
+        if (val) {
+            val.priority = priority;
+            this.bubbleUp(this.content.indexOf(val));
         }
+    }
+
+    contains(key: T): boolean {
+        return !!this.content.find((vertex) => vertex.data === key);
     }
 
     private bubbleUp(index: number = this.content.length - 1) {
