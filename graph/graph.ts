@@ -208,23 +208,72 @@ class Graph {
 
         return path;
     }
+
+    /**
+     * Prim's algorithm to find the minimum spaning tree of the given graph
+     * @param source - Vertex prim's algorithm is going to start from
+     * @return Minimum spanning tree
+     */
+    prim(source: string): Graph {
+        const priorityQueue = new PriorityQueue<string>();
+        const previous = new Map<string, string | null>();
+        const distances = new Map<string, number>();
+        const visited = new Set<string>();
+        const spanningTree = new Graph();
+
+        for (const [key, _] of this.adjacencyList) {
+            priorityQueue.enqueue(key, Number.MAX_SAFE_INTEGER);
+            distances.set(key, Number.MAX_SAFE_INTEGER);
+            previous.set(key, null);
+            spanningTree.addVertex(key);
+        }
+
+        priorityQueue.changePriority(source, 0);
+        distances.set(source, 0);
+
+        while (!priorityQueue.isEmpty()) {
+            const currentVertex = priorityQueue.dequeue();
+            visited.add(currentVertex.data);
+
+            for (const [key, value] of this.adjacencyList.get(
+                currentVertex.data,
+            ) as Map<string, number>) {
+                const candidate = currentVertex.priority + value;
+                if (
+                    !visited.has(key) &&
+                    (distances.get(key) as number) > candidate
+                ) {
+                    spanningTree.addEdge(
+                        key,
+                        currentVertex.data,
+                        currentVertex.priority,
+                    );
+                    priorityQueue.changePriority(key, candidate);
+                    previous.set(key, currentVertex.data);
+                    distances.set(key, candidate);
+                }
+            }
+        }
+
+        return spanningTree;
+    }
 }
 
 const graph = new Graph();
 
-graph.addVertex('1');
-graph.addVertex('2');
-graph.addVertex('3');
-graph.addVertex('4');
-graph.addVertex('5');
-graph.addVertex('6');
-graph.addEdge('1', '2', 7);
-graph.addEdge('1', '3', 9);
-graph.addEdge('1', '6', 14);
-graph.addEdge('6', '3', 2);
-graph.addEdge('3', '2', 10);
-graph.addEdge('6', '5', 9);
-graph.addEdge('3', '4', 11);
-graph.addEdge('2', '4', 15);
-graph.addEdge('5', '4', 6);
-console.log(graph.bellmanFord('1', '5'));
+graph.addVertex('A');
+graph.addVertex('B');
+graph.addVertex('C');
+graph.addVertex('D');
+graph.addVertex('E');
+graph.addVertex('F');
+graph.addEdge('A', 'B', 3);
+graph.addEdge('A', 'D', 1);
+graph.addEdge('B', 'D', 3);
+graph.addEdge('B', 'C', 1);
+graph.addEdge('D', 'C', 1);
+graph.addEdge('D', 'E', 6);
+graph.addEdge('C', 'F', 4);
+graph.addEdge('C', 'E', 5);
+graph.addEdge('E', 'F', 2);
+console.log(graph.prim('A'));
