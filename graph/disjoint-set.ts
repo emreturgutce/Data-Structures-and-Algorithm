@@ -1,25 +1,25 @@
-class DisjointSetNode {
-    readonly data: number;
+class DisjointSetNode<T> {
+    readonly data: T;
     rank: number = 0;
-    parent: DisjointSetNode;
+    parent: DisjointSetNode<T>;
 
-    constructor(data: number) {
+    constructor(data: T) {
         this.data = data;
         this.parent = this;
     }
 }
 
-class DisjointSet {
-    list: Map<number, DisjointSetNode> = new Map();
+export class DisjointSet<T> {
+    private list: Map<T, DisjointSetNode<T>> = new Map();
 
-    makeSet(data: number): void {
+    makeSet(data: T): void {
         const node = new DisjointSetNode(data);
         this.list.set(data, node);
     }
 
-    union(data1: number, data2: number): boolean {
-        const node1 = this.list.get(data1) as DisjointSetNode;
-        const node2 = this.list.get(data2) as DisjointSetNode;
+    union(data1: T, data2: T): boolean {
+        const node1 = this.list.get(data1) as DisjointSetNode<T>;
+        const node2 = this.list.get(data2) as DisjointSetNode<T>;
 
         const parent1 = this.findSet(node1);
         const parent2 = this.findSet(node2);
@@ -37,7 +37,7 @@ class DisjointSet {
         return true;
     }
 
-    private findSet(node: DisjointSetNode): DisjointSetNode {
+    private findSet(node: DisjointSetNode<T>): DisjointSetNode<T> {
         const parent = node.parent;
 
         if (parent === node) return parent;
@@ -45,31 +45,27 @@ class DisjointSet {
         return (node.parent = this.findSet(node.parent));
     }
 
-    findSetByNumber(node: number) {
-        return this.findSet(this.list.get(node) as DisjointSetNode).data;
+    findSetByNumber(node: T) {
+        return this.findSet(this.list.get(node) as DisjointSetNode<T>).data;
+    }
+
+    inSameSet(val1: T, val2: T): boolean {
+        const node1 = this.list.get(val1) as DisjointSetNode<T>;
+        const node2 = this.list.get(val2) as DisjointSetNode<T>;
+
+        return this.findSet(node1) === this.findSet(node2);
     }
 }
 
-const ds = new DisjointSet();
+const ds = new DisjointSet<number>();
 ds.makeSet(1);
 ds.makeSet(2);
 ds.makeSet(3);
 ds.makeSet(4);
-ds.makeSet(5);
-ds.makeSet(6);
-ds.makeSet(7);
 
 ds.union(1, 2);
-ds.union(2, 3);
-ds.union(4, 5);
-ds.union(6, 7);
-ds.union(5, 6);
-ds.union(3, 7);
 
 console.log(ds.findSetByNumber(1));
 console.log(ds.findSetByNumber(2));
 console.log(ds.findSetByNumber(3));
 console.log(ds.findSetByNumber(4));
-console.log(ds.findSetByNumber(5));
-console.log(ds.findSetByNumber(6));
-console.log(ds.findSetByNumber(7));

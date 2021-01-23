@@ -1,13 +1,16 @@
 import { PriorityQueue } from '../heap/priority-queue';
+import { DisjointSet } from './disjoint-set';
 
 /**
  * Weighted and directed Graph
  */
 class Graph {
     private adjacencyList: Map<string, Map<string, number>>;
+    private edges: Map<string[], number>;
 
     constructor() {
         this.adjacencyList = new Map();
+        this.edges = new Map();
     }
 
     /**
@@ -36,7 +39,12 @@ class Graph {
                 dest,
                 this.adjacencyList.get(dest)!.set(source, weight),
             );
+            this.edges.set([source, dest].sort(), weight);
         }
+    }
+
+    getEdges(): Map<string[], number> {
+        return this.edges;
     }
 
     /**
@@ -257,6 +265,42 @@ class Graph {
 
         return spanningTree;
     }
+
+    /**
+     * Kruskal's algorithm to find the minimum spaning tree of the given graph
+     * @return Minimum spanning tree
+     */
+    kruskal(): Graph {
+        const spanningTree = new Graph();
+        const priorityQueue = new PriorityQueue<string[]>();
+        const disjointSet = new DisjointSet<string>();
+
+        for (const [key, _] of this.adjacencyList) {
+            disjointSet.makeSet(key);
+            spanningTree.addVertex(key);
+        }
+
+        for (const [key, value] of this.getEdges()) {
+            priorityQueue.enqueue(key, value);
+        }
+
+        while (!priorityQueue.isEmpty()) {
+            const currentEdge = priorityQueue.dequeue();
+            const startVertex = currentEdge.data[0];
+            const endVertex = currentEdge.data[1];
+
+            if (!disjointSet.inSameSet(startVertex, endVertex)) {
+                disjointSet.union(startVertex, endVertex);
+                spanningTree.addEdge(
+                    startVertex,
+                    endVertex,
+                    currentEdge.priority,
+                );
+            }
+        }
+
+        return spanningTree;
+    }
 }
 
 const graph = new Graph();
@@ -276,4 +320,4 @@ graph.addEdge('D', 'E', 6);
 graph.addEdge('C', 'F', 4);
 graph.addEdge('C', 'E', 5);
 graph.addEdge('E', 'F', 2);
-console.log(graph.prim('A'));
+console.log(graph.kruskal());
