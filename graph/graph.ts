@@ -301,6 +301,31 @@ class Graph {
 
         return spanningTree;
     }
+
+    /**
+     * Cycle detection algorithm to determine if there is a cycle in the given graph.
+     * @return If there is a cycle true else false.
+     */
+    detectCycle(): boolean {
+        const disjointSet = new DisjointSet<string>();
+
+        for (const [key, _] of this.adjacencyList) {
+            disjointSet.makeSet(key);
+        }
+
+        let cycleFound = false;
+
+        for (const [[startVertex, endVertex], _] of this.getEdges()) {
+            if (disjointSet.inSameSet(startVertex, endVertex)) {
+                cycleFound = true;
+                break;
+            } else {
+                disjointSet.union(startVertex, endVertex);
+            }
+        }
+
+        return cycleFound;
+    }
 }
 
 const graph = new Graph();
@@ -320,4 +345,4 @@ graph.addEdge('D', 'E', 6);
 graph.addEdge('C', 'F', 4);
 graph.addEdge('C', 'E', 5);
 graph.addEdge('E', 'F', 2);
-console.log(graph.kruskal());
+console.log(graph.detectCycle());
