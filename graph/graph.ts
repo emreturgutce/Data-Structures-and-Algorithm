@@ -326,6 +326,50 @@ class Graph {
 
         return cycleFound;
     }
+
+    /**
+     * @param start - Start vertex traveling salesman is going to start from
+     * @param current - Vertex where traveling salesman currently is.
+     * @param visited - Already visited vertices.
+     * @param cost - Cost of current travel.
+     * @param ans - Minimum cost between all travels.
+     * @return Minimum cost
+     */
+    travelingSalesman(
+        start: string,
+        current = start,
+        visited = new Set<string>(),
+        cost = 0,
+        ans = Number.MAX_SAFE_INTEGER,
+    ): number {
+        const currentVertex = this.adjacencyList.get(current) as Map<
+            string,
+            number
+        >;
+
+        if (
+            visited.size + 1 === this.adjacencyList.size &&
+            currentVertex.has(start)
+        ) {
+            return Math.min(ans, cost + currentVertex.get(start)!);
+        }
+
+        for (const [key, value] of currentVertex) {
+            if (!visited.has(key)) {
+                visited.add(current);
+                ans = this.travelingSalesman(
+                    start,
+                    key,
+                    visited,
+                    cost + value,
+                    ans,
+                );
+                visited.delete(current);
+            }
+        }
+
+        return ans;
+    }
 }
 
 const graph = new Graph();
@@ -333,16 +377,7 @@ const graph = new Graph();
 graph.addVertex('A');
 graph.addVertex('B');
 graph.addVertex('C');
-graph.addVertex('D');
-graph.addVertex('E');
-graph.addVertex('F');
-graph.addEdge('A', 'B', 3);
-graph.addEdge('A', 'D', 1);
-graph.addEdge('B', 'D', 3);
-graph.addEdge('B', 'C', 1);
-graph.addEdge('D', 'C', 1);
-graph.addEdge('D', 'E', 6);
-graph.addEdge('C', 'F', 4);
-graph.addEdge('C', 'E', 5);
-graph.addEdge('E', 'F', 2);
-console.log(graph.detectCycle());
+graph.addEdge('A', 'B', 20);
+graph.addEdge('A', 'C', 42);
+graph.addEdge('B', 'C', 30);
+console.log(graph.tsp('A'));
