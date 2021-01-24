@@ -380,4 +380,4 @@ graph.addVertex('C');
 graph.addEdge('A', 'B', 20);
 graph.addEdge('A', 'C', 42);
 graph.addEdge('B', 'C', 30);
-console.log(graph.tsp('A'));
+console.log(graph.travelingSalesman('A'));
